@@ -13,6 +13,54 @@
         <input type="text" id="message" placeholder="Nhập tin nhắn...">
         <button onclick="sendMessage()">Gửi</button>
     </div>
-    <script src="script.js"></script>
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"></script>
+    
+    <script>
+        // Cấu hình Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDbQm3...",
+            authDomain: "chat-99730.firebaseapp.com",
+            projectId: "chat-99730",
+            storageBucket: "chat-99730.appspot.com",
+            messagingSenderId: "854989107609",
+            appId: "1:854989107609:web:f5670c86f7e5dc3e6c2308"
+        };
+        
+        // Khởi tạo Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        
+        function sendMessage() {
+            let username = document.getElementById('username').value;
+            let message = document.getElementById('message').value;
+            if (username.trim() === '' || message.trim() === '') return;
+            
+            db.collection("messages").add({
+                username: username,
+                message: message,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+            document.getElementById('message').value = '';
+        }
+        
+        function loadMessages() {
+            db.collection("messages").orderBy("timestamp").onSnapshot(snapshot => {
+                let chatBox = document.getElementById('chat-box');
+                chatBox.innerHTML = '';
+                snapshot.forEach(doc => {
+                    let msg = doc.data();
+                    let newMessage = document.createElement('div');
+                    newMessage.textContent = msg.username + ': ' + msg.message;
+                    chatBox.appendChild(newMessage);
+                });
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
+        }
+        
+        loadMessages();
+    </script>
 </body>
 </html>
