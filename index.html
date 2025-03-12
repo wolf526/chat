@@ -11,7 +11,7 @@
         <div id="chat-box" class="chat-box"></div>
         <input type="text" id="username" placeholder="Tên của bạn">
         <input type="text" id="message" placeholder="Nhập tin nhắn...">
-        <button onclick="sendMessage()">Gửi</button>
+        <button id="sendBtn">Gửi</button>
     </div>
     
     <!-- Firebase SDK -->
@@ -42,8 +42,11 @@
                 username: username,
                 message: message,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            }).then(() => {
+                document.getElementById('message').value = '';
+            }).catch(error => {
+                console.error("Lỗi gửi tin nhắn: ", error);
             });
-            document.getElementById('message').value = '';
         }
         
         function loadMessages() {
@@ -59,6 +62,8 @@
                 chatBox.scrollTop = chatBox.scrollHeight;
             });
         }
+        
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
         
         loadMessages();
     </script>
